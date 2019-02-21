@@ -115,7 +115,7 @@
           );
 
           newDate = addTZ(newDate, params);
-
+          newDate.dateOnly = true;
           // Store as string - worst case scenario
           return storeValParam(name)(newDate, curr)
         }
