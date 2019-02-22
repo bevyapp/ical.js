@@ -99,7 +99,8 @@
   var dateParam = function(name){
       return function (val, params, curr) {
 
-      var newDate = text(val);
+      var textVal = text(val);
+      var newDate = textVal;
 
 
       if (params && params[0] === "VALUE=DATE") {
@@ -116,6 +117,8 @@
 
           newDate = addTZ(newDate, params);
           newDate.dateOnly = true;
+          newDate.raw = textVal;
+          
           // Store as string - worst case scenario
           return storeValParam(name)(newDate, curr)
         }
@@ -147,6 +150,7 @@
         }
 
         newDate = addTZ(newDate, params);
+        newDate.raw = textVal;
     }
 
 
