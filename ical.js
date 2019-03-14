@@ -153,6 +153,26 @@
         newDate.raw = textVal;
     }
 
+      /*
+      Addition by Jon here. Some calendars don't have the "VALUE=DATE" as required for all day events.
+      But, ical and Gcal handle it as allday just fine without it.
+      */
+        var compsDate = /^(\d{4})(\d{2})(\d{2})$/.exec(val);
+        if (compsDate !== null) {
+          // No TZ info - assume same timezone as this computer
+          newDate = new Date(
+            compsDate[1],
+            parseInt(compsDate[2], 10)-1,
+            compsDate[3]
+          );
+
+          newDate = addTZ(newDate, params);
+          newDate.dateOnly = true;
+          newDate.raw = textVal;
+          
+          return storeValParam(name)(newDate, curr)
+        }
+
 
           // Store as string - worst case scenario
       return storeValParam(name)(newDate, curr)
