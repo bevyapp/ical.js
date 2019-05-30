@@ -446,21 +446,37 @@
           i += 1
         }
 
-        var kv = l.split(":")
-
-        if (kv.length < 2){
-          // Invalid line - must have k&v
+        // var kv = l.split(":")
+        var colonIndex = l.indexOf(":");
+        if(colonIndex === -1){
           continue;
         }
+        else{
+          //trying to handle values like this: DTSTART;TZID="tzone://Microsoft/Utc":20190308T160000
+          var quoteIndex = l.indexOf('"');
+          if(quoteIndex !== -1 && quoteIndex < colonIndex){
+            var closingQuote = l.indexOf('"', quoteIndex+1);
+            colonIndex = l.indexOf(":", closingQuote);
+          }
+        }
+        if(colonIndex === -1){
+          continue;
+        }
+        var kv = [l.substring(0, colonIndex), l.substring(colonIndex+1)];
+
 
         // Although the spec says that vals with colons should be quote wrapped
         // in practise nobody does, so we assume further colons are part of the
-        // val
-        var value = kv.slice(1).join(":")
-          , kp = kv[0].split(";")
-          , name = kp[0]
-          , params = kp.slice(1)
+        // Jon: yes they do. Handled a bit better.
 
+        var value = kv[1];
+
+        var kp = kv[0].split(";");
+        var name = kp[0];
+  
+        var params = kp.slice(1);
+        var paramThenValue = params.join(";")+value;
+      
         ctx = self.handleObject(name, value, params, ctx, stack, l) || {}
       }
 
